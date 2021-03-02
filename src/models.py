@@ -43,6 +43,8 @@ from .utils import assert_for_log, get_batch_utilization, get_batch_size
 from .preprocess import parse_task_list_arg, get_tasks
 from .seq2seq_decoder import Seq2SeqDecoder
 
+import glt_ungrounded
+
 
 # Elmo stuff
 # Look in $ELMO_SRC_DIR (e.g. /usr/share/jsalt/elmo) or download from web
@@ -118,6 +120,32 @@ def build_model(args, vocab, pretrained_embs, tasks):
             cove_layer=cove_layer)
         d_sent = 2 * args.d_hid
         log.info("Using BiLSTM architecture for shared encoder!")
+    elif args.sent_enc == 'glt':
+        config = = BertConfig(
+            grounded=False,
+            max_sentence_length=args.max_seq_len,
+            hidden_size=400,
+            input_img_dim=None,
+            max_position_embeddings=args.max_seq_len,
+            use_position_embeddings=False,
+            hidden_dropout_prob=0.0,
+            attention_probs_dropout_prob=0,
+            layer_dropout_prob=0.25,
+            intermediate_size=400,
+            layers_to_tie=["pair_compose.intermediate.dense","pair_compose.control_gate","pair_compose.attention","pair_compose.constt_energy","pair_compose.constt_rep_lin","pair_compose.vis_text_text_comp.comp_func","pair_compose.meaning_query_2"],
+            tie_layer_norm=True,
+            answer_pooler=True,
+            non_compositional_reps=False,
+            visual_module_dropout_prob=0
+          )
+          sent_encoder = glt_ungrounded.GroundedCKYEncoder(config)
+          sent_encoder = SentenceEncoder(vocab, embedder, args.n_layers_highway,
+                                         sent_encoder, dropout=args.dropout,
+                                         skip_embs=args.skip_embs,
+                                         cove_layer=cove_layer,
+                                         sep_embs_for_skip=args.sep_embs_for_skip)
+          log.info("Using GLT architecture for shared encoder!")
+
     elif args.sent_enc == 'transformer':
         transformer = StackedSelfAttentionEncoder.from_params(copy.deepcopy(tfm_params))
         sent_encoder = SentenceEncoder(vocab, embedder, args.n_layers_highway,
