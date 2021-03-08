@@ -186,6 +186,7 @@ class GroundedCKYEncoder(nn.Module):
     def __init__(self, config):
         super(GroundedCKYEncoder, self).__init__()
         self.input_size = config.input_size
+        self.output_size = config.hidden_size
         self.output_attentions = config.output_attentions
         self.output_hidden_states = config.output_hidden_states
         self.word_energy_lin = nn.Linear(config.hidden_size, 1)
@@ -204,6 +205,9 @@ class GroundedCKYEncoder(nn.Module):
 
     def get_input_dim(self):
         return self.input_size
+
+    def get_output_dim(self):
+        return self.output_size
 
     def forward(self, hidden_states, attention_mask, pad_start=None):
         all_hidden_states = [hidden_states]
