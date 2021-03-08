@@ -540,7 +540,7 @@ def build_pair_sentence_module(task, d_inp, model, vocab, params):
         pair_attn = build_pair_attn(d_inp, params["attn"], params["d_hid_attn"])
 
     n_classes = task.n_classes if hasattr(task, 'n_classes') else 1
-    classifier = Classifier.from_params(4 * d_out, n_classes, params)
+    classifier = Classifier.from_params(d_out, n_classes, params)
     module = PairClassifier(pooler, classifier, pair_attn)
     return module
 
