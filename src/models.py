@@ -135,7 +135,7 @@ def build_model(args, vocab, pretrained_embs, tasks):
             intermediate_size=400,
             layers_to_tie=["pair_compose.intermediate.dense","pair_compose.attention","pair_compose.constt_energy"],
             tie_layer_norm=True,
-            answer_pooler=True,
+            answer_pooler=False,
             non_compositional_reps=False,
             visual_module_dropout_prob=0,
             answer_comp_dropout_prob=0.0,
@@ -540,7 +540,7 @@ def build_pair_sentence_module(task, d_inp, model, vocab, params):
         pair_attn = build_pair_attn(d_inp, params["attn"], params["d_hid_attn"])
 
     n_classes = task.n_classes if hasattr(task, 'n_classes') else 1
-    classifier = Classifier.from_params(d_out, n_classes, params)
+    classifier = Classifier.from_params(4*d_out, n_classes, params)
     module = PairClassifier(pooler, classifier, pair_attn)
     return module
 
