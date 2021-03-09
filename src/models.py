@@ -125,14 +125,14 @@ def build_model(args, vocab, pretrained_embs, tasks):
         config = BertConfig(
             grounded=False,
             max_sentence_length=args.max_seq_len,
-            hidden_size=400,
+            hidden_size=512,
             input_img_dim=None,
             max_position_embeddings=args.max_seq_len,
             use_position_embeddings=False,
             hidden_dropout_prob=0.0,
             attention_probs_dropout_prob=0,
             layer_dropout_prob=0.25,
-            intermediate_size=400,
+            intermediate_size=512,
             layers_to_tie=["pair_compose.intermediate.dense","pair_compose.attention","pair_compose.constt_energy"],
             tie_layer_norm=True,
             answer_pooler=False,
@@ -147,6 +147,7 @@ def build_model(args, vocab, pretrained_embs, tasks):
                                          skip_embs=args.skip_embs,
                                          cove_layer=cove_layer,
                                          sep_embs_for_skip=args.sep_embs_for_skip)
+        d_sent = 512
         log.info("Using GLT architecture for shared encoder!")
 
     elif args.sent_enc == 'transformer':
