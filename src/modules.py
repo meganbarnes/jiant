@@ -45,6 +45,7 @@ from . import utils
 from .cnns.alexnet import alexnet
 from .cnns.resnet import resnet101
 from .cnns.inception import inception_v3
+import src.glt_ungrounded as glt_ungrounded
 
 
 class NullPhraseLayer(nn.Module):
@@ -173,6 +174,7 @@ class SentenceEncoder(Model):
 
         # ELMoLSTM returns all layers, we just want to use the top layer
         sent_enc = sent_enc[-1] if isinstance(self._phrase_layer, BiLMEncoder) else sent_enc
+        sent_enc = sent_enc[0] if isinstance(self._phrase_layer, glt_ungrounded.GroundedCKYEncoder) else sent_enc
         sent_enc = self._dropout(sent_enc) if sent_enc is not None else sent_enc
         if self.skip_embs:
             # Use skip connection with original sentence embs or task sentence embs
@@ -182,6 +184,8 @@ class SentenceEncoder(Model):
                                  "properly?")
             if isinstance(self._phrase_layer, NullPhraseLayer):
                 sent_enc = skip_vec
+            elif isinstance(self._phrase_layer, glt_ungrounded.GroundedCKYEncoder):
+                return sent_enc, sent_mask
             else:
                 sent_enc = torch.cat([sent_enc, skip_vec], dim=-1)
 
@@ -320,19 +324,24 @@ class SingleClassifier(nn.Module):
 class PairClassifier(nn.Module):
     ''' Thin wrapper around a set of modules. For sentence pair classification. '''
 
-    def __init__(self, pooler, classifier, attn=None):
+    def __init__(self, pooler, classifier, attn=None, do_pool=True):
         super(PairClassifier, self).__init__()
         self.pooler = pooler
         self.classifier = classifier
         self.attn = attn
+        self.do_pool = do_pool
 
     def forward(self, s1, s2, mask1, mask2):
         mask1 = mask1.squeeze(-1) if len(mask1.size()) > 2 else mask1
         mask2 = mask2.squeeze(-1) if len(mask2.size()) > 2 else mask2
         if self.attn is not None:
             s1, s2 = self.attn(s1, s2, mask1, mask2)
-        emb1 = self.pooler(s1, mask1)
-        emb2 = self.pooler(s2, mask2)
+        if self.do_pool:
+            emb1 = self.pooler(s1, mask1)
+            emb2 = self.pooler(s2, mask2)
+        else:
+            emb1 = s1
+            emb2 = s2
         pair_emb = torch.cat([emb1, emb2, torch.abs(emb1 - emb2), emb1 * emb2], 1)
         logits = self.classifier(pair_emb)
         return logits

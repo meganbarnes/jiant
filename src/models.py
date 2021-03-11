@@ -172,8 +172,8 @@ def build_model(args, vocab, pretrained_embs, tasks):
         log.info("No shared encoder (just using word embeddings)!")
     else:
         assert_for_log(False, "No valid sentence encoder specified.")
-
-    d_sent += args.skip_embs * d_emb
+    if args.sent_enc != "glt":
+    	d_sent += args.skip_embs * d_emb
 
     # Build model and classifiers
     model = MultiTaskModel(args, sent_encoder, vocab)
@@ -539,10 +539,14 @@ def build_pair_sentence_module(task, d_inp, model, vocab, params):
             pair_attn = model.pair_attn
     else:
         pair_attn = build_pair_attn(d_inp, params["attn"], params["d_hid_attn"])
-
+    
+    do_pool = True
+    if isinstance(model.sent_encoder._phrase_layer, glt_ungrounded.GroundedCKYEncoder):
+        do_pool = False
+    
     n_classes = task.n_classes if hasattr(task, 'n_classes') else 1
     classifier = Classifier.from_params(4*d_out, n_classes, params)
-    module = PairClassifier(pooler, classifier, pair_attn)
+    module = PairClassifier(pooler, classifier, pair_attn, do_pool=do_pool)
     return module
 
 def build_lm(task, d_inp, args):

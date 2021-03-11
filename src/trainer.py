@@ -249,7 +249,7 @@ class SamplingMultiTaskTrainer:
                                       max_instances_in_memory=10000,
                                       batch_size=batch_size,
                                       biggest_batch_first=True)
-            tr_generator = iterator(task.train_data, num_epochs=None, cuda_device=self._cuda_device)
+            tr_generator = iterator(task.train_data, num_epochs=None) #, cuda_device=self._cuda_device)
 
             task_info['iterator'] = iterator
 
