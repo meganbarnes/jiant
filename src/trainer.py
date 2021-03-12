@@ -440,6 +440,11 @@ class SamplingMultiTaskTrainer:
                 n_batches_since_val += 1
                 total_batches_trained += 1
                 optimizer.zero_grad()
+
+                batch["input1"]["elmo"] = batch["input1"]["elmo"].cuda(self._cuda_device)
+                batch["input2"]["elmo"] = batch["input2"]["elmo"].cuda(self._cuda_device)
+                batch["labels"] = batch["labels"].cuda(self._cuda_device)                
+
                 output_dict = self._forward(batch, task=task, for_training=True)
                 assert_for_log("loss" in output_dict,
                                "Model must return a dict containing a 'loss' key")
@@ -460,6 +465,8 @@ class SamplingMultiTaskTrainer:
                 # step scheduler if it's not ReduceLROnPlateau
                 if not isinstance(scheduler.lr_scheduler, ReduceLROnPlateau):
                     scheduler.step_batch(n_pass)
+
+                
 
             # Update training progress on that task
             task_info['n_batches_since_val'] = n_batches_since_val
@@ -489,7 +496,7 @@ class SamplingMultiTaskTrainer:
                     log.info("TRAINING BATCH UTILIZATION: %.3f", batch_util)
 
             # Validation
-            if n_pass % validation_interval == 0:
+            if True: #n_pass % validation_interval == 0:
 
                 # Dump and log all of our current info
                 epoch = int(n_pass / validation_interval)
@@ -593,8 +600,8 @@ class SamplingMultiTaskTrainer:
             else:
                 max_data_points = task.n_val_examples
             val_generator = BasicIterator(batch_size, instances_per_epoch=max_data_points)(
-                task.val_data, num_epochs=1, shuffle=False,
-                cuda_device=self._cuda_device)
+                task.val_data, num_epochs=1, shuffle=False)
+                #cuda_device=self._cuda_device)
             n_val_batches = math.ceil(max_data_points / batch_size)
             all_val_metrics["%s_loss" % task.name] = 0.0
 

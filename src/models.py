@@ -531,6 +531,7 @@ def build_pair_sentence_module(task, d_inp, model, vocab, params):
         pooler = Pooler.from_params(d_inp, params["d_proj"], project=True)
         d_out = params["d_proj"]
 
+    print("D PROJ", d_out)
     if params["shared_pair_attn"]:
         if not hasattr(model, "pair_attn"):
             pair_attn = build_pair_attn(d_inp, params["attn"], params["d_hid_attn"])
@@ -538,11 +539,12 @@ def build_pair_sentence_module(task, d_inp, model, vocab, params):
         else:
             pair_attn = model.pair_attn
     else:
-        pair_attn = build_pair_attn(d_inp, params["attn"], params["d_hid_attn"])
+        pair_attn = None #build_pair_attn(d_inp, params["attn"], params["d_hid_attn"])
     
     do_pool = True
     if isinstance(model.sent_encoder._phrase_layer, glt_ungrounded.GroundedCKYEncoder):
         do_pool = False
+        d_out = 512
     
     n_classes = task.n_classes if hasattr(task, 'n_classes') else 1
     classifier = Classifier.from_params(4*d_out, n_classes, params)

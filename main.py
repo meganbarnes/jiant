@@ -127,8 +127,9 @@ def main(cl_arguments):
     random.seed(seed)
     torch.manual_seed(seed)
     log.info("Using random seed %d", seed)
+    args.cuda = 0
     print("ARGS CUDA", args.cuda)
-    if False: #args.cuda >= 0:
+    if args.cuda >= 0:
         try:
             if not torch.cuda.is_available():
                 raise EnvironmentError("CUDA is not available, or not detected"
@@ -140,7 +141,7 @@ def main(cl_arguments):
             log.warning(
                 "GPU access failed. You might be using a CPU-only installation of PyTorch. Falling back to CPU.")
             args.cuda = -1
-    args.cuda = -1
+   
     # Prepare data #
     log.info("Loading tasks...")
     start_time = time.time()
