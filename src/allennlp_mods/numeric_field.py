@@ -44,6 +44,7 @@ class NumericField(Field[numpy.ndarray]):
         self.label = label
         self._label_namespace = label_namespace
         self._label_id = numpy.array(label, dtype=numpy.float32)
+        print("NUMERIC FIELD", label_namespace)
         if not (self._label_namespace.endswith("labels") or self._label_namespace.endswith("tags")):
             logger.warning(
                 "Your label namespace was '%s'. We recommend you use a namespace "

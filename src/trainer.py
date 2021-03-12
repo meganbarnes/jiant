@@ -465,6 +465,8 @@ class SamplingMultiTaskTrainer:
                 # step scheduler if it's not ReduceLROnPlateau
                 if not isinstance(scheduler.lr_scheduler, ReduceLROnPlateau):
                     scheduler.step_batch(n_pass)
+    
+            del batch
 
                 
 
@@ -496,7 +498,7 @@ class SamplingMultiTaskTrainer:
                     log.info("TRAINING BATCH UTILIZATION: %.3f", batch_util)
 
             # Validation
-            if True: #n_pass % validation_interval == 0:
+            if n_pass % validation_interval == 0:
 
                 # Dump and log all of our current info
                 epoch = int(n_pass / validation_interval)
@@ -606,6 +608,9 @@ class SamplingMultiTaskTrainer:
             all_val_metrics["%s_loss" % task.name] = 0.0
 
             for batch in val_generator:
+                batch["input1"]["elmo"] = batch["input1"]["elmo"].cuda(self._cuda_device)
+                batch["input2"]["elmo"] = batch["input2"]["elmo"].cuda(self._cuda_device)
+                batch["labels"] = batch["labels"].cuda(self._cuda_device)
                 batch_num += 1
                 out = self._forward(batch, task=task, for_training=False)
                 loss = out["loss"]

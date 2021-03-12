@@ -304,7 +304,7 @@ def build_tasks(args):
             args.reload_indexing and not reindex_tasks),
         "Flag reload_indexing was set, but no tasks are set to reindex (use -o \"args.reindex_tasks = \"task1,task2,...\"\")")
     for task in tasks:
-        force_reindex = (args.reload_indexing and task.name in reindex_tasks)
+        force_reindex = True #(args.reload_indexing and task.name in reindex_tasks)
         for split in ALL_SPLITS:
             log_prefix = "\tTask '%s', split '%s'" % (task.name, split)
             relative_path = _get_serialized_record_path(task.name, split, "preproc")

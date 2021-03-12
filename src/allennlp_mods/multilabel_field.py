@@ -63,7 +63,7 @@ class MultiLabelField(Field[torch.Tensor]):
         self._maybe_warn_for_namespace(label_namespace)
         self._num_labels = num_labels
         self._skip_indexing = skip_indexing
-
+        print("MULTILABEL FIELD", label_namespace)
         if skip_indexing:
             if not all(isinstance(label, int) for label in labels):
                 raise ConfigurationError("In order to skip indexing, your labels must be integers. "
