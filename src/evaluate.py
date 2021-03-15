@@ -55,8 +55,13 @@ def evaluate(model, tasks: Sequence[tasks_module.Task], batch_size: int,
         task_preds = []  # accumulate DataFrames
         assert split in ["train", "val", "test"]
         dataset = getattr(task, "%s_data" % split)
-        generator = iterator(dataset, num_epochs=1, shuffle=False, cuda_device=cuda_device)
+        generator = iterator(dataset, num_epochs=1, shuffle=False) #, cuda_device=cuda_device)
         for batch_idx, batch in enumerate(generator):
+
+            batch["input1"]["elmo"] = batch["input1"]["elmo"].cuda(cuda_device)
+            batch["input2"]["elmo"] = batch["input2"]["elmo"].cuda(cuda_device)
+            batch["labels"] = batch["labels"].cuda(cuda_device)      
+
             out = model.forward(task, batch, predict=True)
             # We don't want mnli-diagnostic to affect the micro and macro average.
             # Accuracy of mnli-diagnostic is hardcoded to 0.

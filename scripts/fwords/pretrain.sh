@@ -1,8 +1,8 @@
 #!/bin/bash
 
-PRETRAIN_TASK=ccg   # name of pretraining task as defined by @register_task in src/tasks.py
-EXP_NAME=ccg        # experiment name
-RUN_NAME=ccg-train  # run name
+PRETRAIN_TASK=mnli   # name of pretraining task as defined by @register_task in src/tasks.py
+EXP_NAME=probe-mnli        # experiment name
+RUN_NAME=probe-mnli-train  # run name
 
 OVERRIDES+=", exp_name = ${EXP_NAME}"
 OVERRIDES+=", run_name = ${RUN_NAME}"
