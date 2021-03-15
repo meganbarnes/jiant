@@ -1,11 +1,11 @@
 #!/bin/bash
 
 CLASSIFIER_TASK=mnli
-EXP_NAME=nli-classifier     # experiment name
+EXP_NAME=glt-nli-classifier     # experiment name
 RUN_NAME=train              # run name
 
-MODEL_DIR=""                # provide path to pretrained model dir
-MODEL_FILE=${MODEL_DIR}"/model_state_main_epoch_77.best_macro.th"   # provide name of pretrained model file
+MODEL_DIR="/home2/mrbarnes/gp1/jiant/mnli/mnli-train"                # provide path to pretrained model dir
+MODEL_FILE=${MODEL_DIR}"/model_state_main_epoch_70.best_macro.th"   # provide name of pretrained model file
 PARAM_FILE=${MODEL_DIR}"/params.conf"
 
 OVERRIDES="load_eval_checkpoint = ${MODEL_FILE}"
@@ -17,5 +17,4 @@ OVERRIDES+=", cuda = ${CUDA_NO}, load_model=1, reload_vocab=1, reload_tasks=1, d
 OVERRIDES+=", elmo=1, elmo_chars_only=1"
 #OVERRIDES+=", sent_enc=bilm"   # uncomment for models pretrained with language modeling
 
-python main.py -c config/final.conf ${PARAM_FILE} config/eval_existing.conf config/naacl_additional.conf -o "${OVERRIDES}" 
-
+python main.py -c config/final.conf ${PARAM_FILE} config/eval_existing.conf config/naacl_additional.conf -o "${OVERRIDES}"
