@@ -1,10 +1,10 @@
 #!/bin/bash
 
 PROBING_TASK=nli-prob-negation      # nli-prob-{negation, prep, spatial, quant, comp}
-EXP_NAME=mnli-pretrained
+EXP_NAME=mnli-glt
 RUN_NAME=probe
 
-MODEL_DIR=""                        # path to trained NLI classifier directory
+MODEL_DIR="/home2/mrbarnes/gp1/jiant/glt-nli-classifier/train"                        # path to trained NLI classifier directory
 PARAM_FILE=${MODEL_DIR}"/params.conf"
 MODEL_FILE=${MODEL_DIR}"/model_state_eval_best.th" # Do not modify
 
