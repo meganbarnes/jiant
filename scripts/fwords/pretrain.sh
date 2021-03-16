@@ -1,8 +1,8 @@
 #!/bin/bash
 
 PRETRAIN_TASK=mnli   # name of pretraining task as defined by @register_task in src/tasks.py
-EXP_NAME=mnli        # experiment name
-RUN_NAME=mnli-train  # run name
+EXP_NAME=mnli-glove        # experiment name
+RUN_NAME=mnli-glove-train  # run name
 
 OVERRIDES+=", exp_name = ${EXP_NAME}"
 OVERRIDES+=", run_name = ${RUN_NAME}"

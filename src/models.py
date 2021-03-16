@@ -122,17 +122,18 @@ def build_model(args, vocab, pretrained_embs, tasks):
         d_sent = 2 * args.d_hid
         log.info("Using BiLSTM architecture for shared encoder!")
     elif args.sent_enc == 'glt':
+        print("D EMB", d_emb)
         config = BertConfig(
             grounded=False,
             max_sentence_length=args.max_seq_len,
-            hidden_size=512,
+            hidden_size=300,
             input_img_dim=None,
             max_position_embeddings=args.max_seq_len,
             use_position_embeddings=False,
             hidden_dropout_prob=0.0,
             attention_probs_dropout_prob=0,
             layer_dropout_prob=0.25,
-            intermediate_size=512,
+            intermediate_size=300,
             layers_to_tie=["pair_compose.intermediate.dense","pair_compose.attention","pair_compose.constt_energy"],
             tie_layer_norm=True,
             answer_pooler=False,
@@ -545,9 +546,9 @@ def build_pair_sentence_module(task, d_inp, model, vocab, params):
     if isinstance(model.sent_encoder._phrase_layer, glt_ungrounded.GroundedCKYEncoder):
         do_pool = False
         d_out = 512
-    
+    print("D OUT", 4*d_out)
     n_classes = task.n_classes if hasattr(task, 'n_classes') else 1
-    classifier = Classifier.from_params(4*d_out, n_classes, params)
+    classifier = Classifier.from_params(1200, n_classes, params)
     module = PairClassifier(pooler, classifier, pair_attn, do_pool=do_pool)
     return module
 

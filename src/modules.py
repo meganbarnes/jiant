@@ -279,7 +279,7 @@ class Classifier(nn.Module):
     ''' Logistic regression or MLP classifier '''
     # NOTE: Expects dropout to have already been applied to its input.
 
-    def __init__(self, d_inp, n_classes, cls_type='mlp', dropout=.2, d_hid=512):
+    def __init__(self, d_inp, n_classes, cls_type='mlp', dropout=.2, d_hid=300):
         super(Classifier, self).__init__()
         if cls_type == 'log_reg':
             classifier = nn.Linear(d_inp, n_classes)

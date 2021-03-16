@@ -440,9 +440,9 @@ class SamplingMultiTaskTrainer:
                 n_batches_since_val += 1
                 total_batches_trained += 1
                 optimizer.zero_grad()
-
-                batch["input1"]["elmo"] = batch["input1"]["elmo"].cuda(self._cuda_device)
-                batch["input2"]["elmo"] = batch["input2"]["elmo"].cuda(self._cuda_device)
+                print(batch["input1"].keys())
+                batch["input1"]["words"] = batch["input1"]["words"].cuda(self._cuda_device)
+                batch["input2"]["words"] = batch["input2"]["words"].cuda(self._cuda_device)
                 batch["labels"] = batch["labels"].cuda(self._cuda_device)                
 
                 output_dict = self._forward(batch, task=task, for_training=True)
@@ -608,8 +608,8 @@ class SamplingMultiTaskTrainer:
             all_val_metrics["%s_loss" % task.name] = 0.0
 
             for batch in val_generator:
-                batch["input1"]["elmo"] = batch["input1"]["elmo"].cuda(self._cuda_device)
-                batch["input2"]["elmo"] = batch["input2"]["elmo"].cuda(self._cuda_device)
+                batch["input1"]["words"] = batch["input1"]["words"].cuda(self._cuda_device)
+                batch["input2"]["words"] = batch["input2"]["words"].cuda(self._cuda_device)
                 batch["labels"] = batch["labels"].cuda(self._cuda_device)
                 batch_num += 1
                 out = self._forward(batch, task=task, for_training=False)
