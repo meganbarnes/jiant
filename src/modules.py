@@ -389,7 +389,7 @@ class AttnPairEncoder(Model):
 
         # s2 representation
         # Shape: (batch_size, s2_length, s1_length)
-        print("SHAPES", similarity_mat.shape, s1_mask.shape, torch.unsqueeze(s1_mask,1).shape)
+        #print("SHAPES", similarity_mat.shape, s1_mask.shape, torch.unsqueeze(s1_mask,1).shape)
         s2_s1_attn = util.masked_softmax(similarity_mat, torch.unsqueeze(s1_mask,1))
         # Shape: (batch_size, s2_length, encoding_dim)
         s2_s1_vectors = util.weighted_sum(s1, s2_s1_attn)
