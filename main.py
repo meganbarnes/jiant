@@ -127,7 +127,7 @@ def main(cl_arguments):
     random.seed(seed)
     torch.manual_seed(seed)
     log.info("Using random seed %d", seed)
-    args.cuda = 0
+    args.cuda = 1
     print("ARGS CUDA", args.cuda)
     if args.cuda >= 0:
         try:
