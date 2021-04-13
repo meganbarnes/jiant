@@ -481,7 +481,8 @@ def build_pair_sentence_module(task, d_inp, model, vocab, params):
 
     def build_pair_attn(d_in, use_attn, d_hid_attn):
         ''' Build the pair model '''
-        if not use_attn:
+        if True: #use_attn:
+            print("NO ATTENTION NICE")
             pair_attn = None
         else:
             d_inp_model = 2 * d_in
@@ -507,6 +508,7 @@ def build_pair_sentence_module(task, d_inp, model, vocab, params):
             pair_attn = model.pair_attn
     else:
         pair_attn = build_pair_attn(d_inp, params["attn"], params["d_hid_attn"])
+
 
     n_classes = task.n_classes if hasattr(task, 'n_classes') else 1
     classifier = Classifier.from_params(4 * d_out, n_classes, params)

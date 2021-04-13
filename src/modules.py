@@ -90,6 +90,12 @@ class SentenceEncoder(Model):
         d_inp_phrase = self._phrase_layer.get_input_dim()
         self.output_dim = phrase_layer.get_output_dim() + (skip_embs * d_inp_phrase)
 
+        #d_inp_model = 2 * d_in
+        modeling_layer = s2s_e.by_name('lstm').from_params(
+            Params({'input_size': 2560, 'hidden_size': 512,
+                        'num_layers': 1, 'bidirectional': True}))
+        self._modeling_layer = modeling_layer
+
         if dropout > 0:
             self._dropout = torch.nn.Dropout(p=dropout)
         else:
@@ -122,6 +128,7 @@ class SentenceEncoder(Model):
         # Skip this for probing runs that don't need it.
         if not isinstance(self._phrase_layer, NullPhraseLayer):
             sent_embs = self._highway_layer(self._text_field_embedder(sent))
+            print("SENT_EMB HIGHWAY", sent_embs.shape)
         else:
             sent_embs = None
 
@@ -168,11 +175,13 @@ class SentenceEncoder(Model):
         sent_lstm_mask = sent_mask if self._mask_lstms else None
         if sent_embs is not None:
             sent_enc = self._phrase_layer(sent_embs, sent_lstm_mask)
+            print("PHRASE LAYER SENT_EMB", sent_enc.shape)
         else:
             sent_enc = None
 
         # ELMoLSTM returns all layers, we just want to use the top layer
         sent_enc = sent_enc[-1] if isinstance(self._phrase_layer, BiLMEncoder) else sent_enc
+        print("BiLM", isinstance(self._phrase_layer, BiLMEncoder), sent_enc.shape)
         sent_enc = self._dropout(sent_enc) if sent_enc is not None else sent_enc
         if self.skip_embs:
             # Use skip connection with original sentence embs or task sentence embs
@@ -184,11 +193,17 @@ class SentenceEncoder(Model):
                 sent_enc = skip_vec
             else:
                 sent_enc = torch.cat([sent_enc, skip_vec], dim=-1)
+                print("DOING SKIP", sent_enc.shape)
 
         sent_mask = sent_mask.unsqueeze(dim=-1)
         pad_mask = (sent_mask == 0)
         assert sent_enc is not None
         sent_enc = sent_enc.masked_fill(pad_mask, 0)
+        print("MASK FILL", sent_enc.shape)
+
+        sent_enc = self._modeling_layer(sent_enc, sent_lstm_mask)
+        print("MODELING LAYER", sent_enc)
+
         return sent_enc, sent_mask
 
     def reset_states(self):
@@ -333,6 +348,8 @@ class PairClassifier(nn.Module):
             s1, s2 = self.attn(s1, s2, mask1, mask2)
         emb1 = self.pooler(s1, mask1)
         emb2 = self.pooler(s2, mask2)
+        print("POOLER", self.pooler)
+        print("EMBEDDING SHAPES", emb1.shape, emb2.shape)
         pair_emb = torch.cat([emb1, emb2, torch.abs(emb1 - emb2), emb1 * emb2], 1)
         logits = self.classifier(pair_emb)
         return logits
