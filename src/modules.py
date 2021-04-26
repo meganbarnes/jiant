@@ -174,6 +174,7 @@ class SentenceEncoder(Model):
 
         # ELMoLSTM returns all layers, we just want to use the top layer
         sent_enc = sent_enc[-1] if isinstance(self._phrase_layer, BiLMEncoder) else sent_enc
+        attn = sent_enc[2] if isinstance(self._phrase_layer, glt_ungrounded.GroundedCKYEncoder) else None
         sent_enc = sent_enc[0] if isinstance(self._phrase_layer, glt_ungrounded.GroundedCKYEncoder) else sent_enc
         sent_enc = self._dropout(sent_enc) if sent_enc is not None else sent_enc
         if self.skip_embs:

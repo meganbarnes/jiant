@@ -437,7 +437,9 @@ class GLTModel(BertPreTrainedModel):
 
         (root_answers, all_hidden_states, all_attentions, vis_root_den, vis_emb,
          all_denotations, debug_info) = encoder_outputs
-
+         
+        print("ATTENTION 1", all_attentions.shape, all_attentions)        
+ 
         if input2_ids.size(1) > 0:
             embedding_output2 = self.embeddings(input_ids=input2_ids)
             attention_mask2 = input2_ids > 0
@@ -448,6 +450,8 @@ class GLTModel(BertPreTrainedModel):
 
             (root_answers2, all_hidden_states2, all_attentions2, vis_root_den2, vis_emb2,
              all_denotations2, debug_info2) = encoder_outputs_2
+
+            print("ATTENTION 2", all_attention2.shape, all_attentions2)
 
             # instances where we have two sentences
             root_answers2 = encoder_outputs_2[0]

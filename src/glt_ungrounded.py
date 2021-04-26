@@ -8,6 +8,7 @@ from allennlp.training.metrics import CategoricalAccuracy
 from torch import nn
 from torch.nn import CrossEntropyLoss
 from transformers import BertPreTrainedModel, BertConfig
+import pickle
 
 from src.nn import tie_layers
 from src.tree import sentence_to_tree
@@ -241,7 +242,12 @@ class GroundedCKYEncoder(nn.Module):
 
             for key, val in layer_debug_info.items():
                 debug_info[f'{key}_{i+1}'] = val
+        
+        dump_file = open("/home2/mrbarnes/gp1/dump_file_glt.txt", "ab")
+        pickle.dump([x.cpu() if x is not None else x for x in list(all_attentions)], dump_file)
+        dump_file.close()
 
         outputs = (root_answers, all_hidden_states, all_attentions, debug_info)
+        print("ATTENTIONS HERE", all_attentions) 
         return outputs  # last-layer hidden state, all hidden states, all attentions
 
