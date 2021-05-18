@@ -163,6 +163,9 @@ def process_sentence(sent, max_seq_len, sos_tok=SOS_TOK, eos_tok=EOS_TOK):
     max_seq_len -= 2
     assert max_seq_len > 0, "Max sequence length should be at least 2!"
     if isinstance(sent, str):
+        f = open("/home2/mrbarnes/gp1/dump_out_tokens_big.txt", "a")
+        f.write("\t".join([sos_tok] + TOKENIZER.tokenize(sent)[:max_seq_len] + [eos_tok])+"\n")
+        f.close()
         return [sos_tok] + TOKENIZER.tokenize(sent)[:max_seq_len] + [eos_tok]
     elif isinstance(sent, list):
         assert isinstance(sent[0], str), "Invalid sentence found!"

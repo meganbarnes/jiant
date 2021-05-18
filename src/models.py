@@ -43,6 +43,8 @@ from .utils import assert_for_log, get_batch_utilization, get_batch_size
 from .preprocess import parse_task_list_arg, get_tasks
 from .seq2seq_decoder import Seq2SeqDecoder
 
+import src.glt_ungrounded as glt_ungrounded
+from transformers import BertConfig
 
 # Elmo stuff
 # Look in $ELMO_SRC_DIR (e.g. /usr/share/jsalt/elmo) or download from web
@@ -485,9 +487,27 @@ def build_pair_sentence_module(task, d_inp, model, vocab, params):
             pair_attn = None
         else:
             d_inp_model = 2 * d_in
-            modeling_layer = s2s_e.by_name('lstm').from_params(
-                Params({'input_size': d_inp_model, 'hidden_size': d_hid_attn,
-                        'num_layers': 1, 'bidirectional': True}))
+            print("D INP", d_inp_model)
+            config = BertConfig(
+                grounded=False,
+                max_sentence_length=40,
+                hidden_size=512,
+                input_img_dim=None,
+                max_position_embeddings=40,
+                use_position_embeddings=False,
+                hidden_dropout_prob=0.0,
+                attention_probs_dropout_prob=0,
+                layer_dropout_prob=0.25,
+                intermediate_size=512,
+                layers_to_tie=["pair_compose.intermediate.dense","pair_compose.attention","pair_compose.constt_energy"],
+                tie_layer_norm=True,
+                answer_pooler=False,
+                non_compositional_reps=False,
+                visual_module_dropout_prob=0,
+                answer_comp_dropout_prob=0.0,
+                input_size=d_inp_model
+            )
+            modeling_layer = glt_ungrounded.GroundedCKYEncoder(config)
             pair_attn = AttnPairEncoder(vocab, modeling_layer,
                                         dropout=params["dropout"])
         return pair_attn
@@ -509,7 +529,7 @@ def build_pair_sentence_module(task, d_inp, model, vocab, params):
         pair_attn = build_pair_attn(d_inp, params["attn"], params["d_hid_attn"])
 
     n_classes = task.n_classes if hasattr(task, 'n_classes') else 1
-    classifier = Classifier.from_params(4 * d_out, n_classes, params)
+    classifier = Classifier.from_params(2048, n_classes, params)
     module = PairClassifier(pooler, classifier, pair_attn)
     return module
 

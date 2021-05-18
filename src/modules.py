@@ -331,8 +331,8 @@ class PairClassifier(nn.Module):
         mask2 = mask2.squeeze(-1) if len(mask2.size()) > 2 else mask2
         if self.attn is not None:
             s1, s2 = self.attn(s1, s2, mask1, mask2)
-        emb1 = self.pooler(s1, mask1)
-        emb2 = self.pooler(s2, mask2)
+        emb1 = s1 #self.pooler(s1, mask1)
+        emb2 = s2 #self.pooler(s2, mask2)
         pair_emb = torch.cat([emb1, emb2, torch.abs(emb1 - emb2), emb1 * emb2], 1)
         logits = self.classifier(pair_emb)
         return logits
@@ -376,6 +376,8 @@ class AttnPairEncoder(Model):
         d_out_model = modeling_layer.get_output_dim()
         self.output_dim = d_out_model
 
+        self.projection = nn.Linear(5120, 512)
+
         self._dropout = torch.nn.Dropout(p=dropout) if dropout > 0 else lambda x: x
         self._mask_lstms = mask_lstms
 
@@ -383,6 +385,7 @@ class AttnPairEncoder(Model):
 
     def forward(self, s1, s2, s1_mask, s2_mask):  # pylint: disable=arguments-differ
         """ """
+        print("s1,s2", s1.shape, s2.shape)
         # Similarity matrix
         # Shape: (batch_size, s2_length, s1_length)
         similarity_mat = self._matrix_attention(s2, s1)
@@ -395,15 +398,21 @@ class AttnPairEncoder(Model):
         s2_s1_vectors = util.weighted_sum(s1, s2_s1_attn)
         # batch_size, seq_len, 4*enc_dim
         s2_w_context = torch.cat([s2, s2_s1_vectors], 2)
+        s2_w_context = self.projection(s2_w_context)
 
+        print("s2_w_context", s2_w_context.shape)
         # s1 representation, using same attn method as for the s2 representation
         s1_s2_attn = util.masked_softmax(similarity_mat.transpose(1, 2).contiguous(), torch.unsqueeze(s2_mask,1))
         # Shape: (batch_size, s1_length, encoding_dim)
         s1_s2_vectors = util.weighted_sum(s2, s1_s2_attn)
         s1_w_context = torch.cat([s1, s1_s2_vectors], 2)
+        s1_w_context = self.projection(s1_w_context)
 
-        modeled_s1 = self._dropout(self._modeling_layer(s1_w_context, s1_mask))
-        modeled_s2 = self._dropout(self._modeling_layer(s2_w_context, s2_mask))
+        print("Modeled s1", s1_w_context.shape)
+        print("Modeled s2", s2_w_context.shape)
+
+        modeled_s1 = self._dropout(self._modeling_layer(s1_w_context, s1_mask)[0])
+        modeled_s2 = self._dropout(self._modeling_layer(s2_w_context, s2_mask)[0])
         return modeled_s1, modeled_s2
 
     @classmethod
