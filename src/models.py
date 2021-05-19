@@ -486,7 +486,7 @@ def build_pair_sentence_module(task, d_inp, model, vocab, params):
         else:
             d_inp_model = 2 * d_in
             modeling_layer = s2s_e.by_name('lstm').from_params(
-                Params({'input_size': d_inp_model, 'hidden_size': d_hid_attn,
+                Params({'input_size': 512, 'hidden_size': 512,
                         'num_layers': 1, 'bidirectional': True}))
             pair_attn = AttnPairEncoder(vocab, modeling_layer,
                                         dropout=params["dropout"])

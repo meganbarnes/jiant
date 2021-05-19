@@ -376,6 +376,8 @@ class AttnPairEncoder(Model):
         d_out_model = modeling_layer.get_output_dim()
         self.output_dim = d_out_model
 
+        self.projection = nn.Linear(5120, 512)
+
         self._dropout = torch.nn.Dropout(p=dropout) if dropout > 0 else lambda x: x
         self._mask_lstms = mask_lstms
 
@@ -395,12 +397,14 @@ class AttnPairEncoder(Model):
         s2_s1_vectors = util.weighted_sum(s1, s2_s1_attn)
         # batch_size, seq_len, 4*enc_dim
         s2_w_context = torch.cat([s2, s2_s1_vectors], 2)
+        s2_w_context = self.projection(s2_w_context)
 
         # s1 representation, using same attn method as for the s2 representation
         s1_s2_attn = util.masked_softmax(similarity_mat.transpose(1, 2).contiguous(), torch.unsqueeze(s2_mask,1))
         # Shape: (batch_size, s1_length, encoding_dim)
         s1_s2_vectors = util.weighted_sum(s2, s1_s2_attn)
         s1_w_context = torch.cat([s1, s1_s2_vectors], 2)
+        s1_w_context = self.projection(s1_w_context)
 
         modeled_s1 = self._dropout(self._modeling_layer(s1_w_context, s1_mask))
         modeled_s2 = self._dropout(self._modeling_layer(s2_w_context, s2_mask))
