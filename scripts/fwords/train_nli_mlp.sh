@@ -4,7 +4,7 @@ CLASSIFIER_TASK=mnli
 EXP_NAME=probe-nli-classifier-projection     # experiment name
 RUN_NAME=train              # run name
 
-MODEL_DIR="/home2/mrbarnes/gp1/jiant/probe-mnli/probe-mnli-projection-train"                # provide path to pretrained model dir
+MODEL_DIR="/home2/mrbarnes/gp1/jiant/probe-mnli-projection/probe-mnli-projection-train"                # provide path to pretrained model dir
 MODEL_FILE=${MODEL_DIR}"/model_state_main_epoch_75.best_macro.th"   # provide name of pretrained model file
 PARAM_FILE=${MODEL_DIR}"/params.conf"
 
