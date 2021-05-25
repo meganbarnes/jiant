@@ -385,7 +385,7 @@ class AttnPairEncoder(Model):
 
     def forward(self, s1, s2, s1_mask, s2_mask):  # pylint: disable=arguments-differ
         """ """
-        print("s1,s2", s1.shape, s2.shape)
+        #print("s1,s2", s1.shape, s2.shape)
         # Similarity matrix
         # Shape: (batch_size, s2_length, s1_length)
         similarity_mat = self._matrix_attention(s2, s1)
@@ -400,7 +400,7 @@ class AttnPairEncoder(Model):
         s2_w_context = torch.cat([s2, s2_s1_vectors], 2)
         s2_w_context = self.projection(s2_w_context)
 
-        print("s2_w_context", s2_w_context.shape)
+        #print("s2_w_context", s2_w_context.shape)
         # s1 representation, using same attn method as for the s2 representation
         s1_s2_attn = util.masked_softmax(similarity_mat.transpose(1, 2).contiguous(), torch.unsqueeze(s2_mask,1))
         # Shape: (batch_size, s1_length, encoding_dim)
@@ -408,8 +408,8 @@ class AttnPairEncoder(Model):
         s1_w_context = torch.cat([s1, s1_s2_vectors], 2)
         s1_w_context = self.projection(s1_w_context)
 
-        print("Modeled s1", s1_w_context.shape)
-        print("Modeled s2", s2_w_context.shape)
+        #print("Modeled s1", s1_w_context.shape)
+        #print("Modeled s2", s2_w_context.shape)
 
         modeled_s1 = self._dropout(self._modeling_layer(s1_w_context, s1_mask)[0])
         modeled_s2 = self._dropout(self._modeling_layer(s2_w_context, s2_mask)[0])

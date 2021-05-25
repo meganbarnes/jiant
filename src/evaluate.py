@@ -57,7 +57,10 @@ def evaluate(model, tasks: Sequence[tasks_module.Task], batch_size: int,
         dataset = getattr(task, "%s_data" % split)
         generator = iterator(dataset, num_epochs=1, shuffle=False) #, cuda_device=cuda_device)
         for batch_idx, batch in enumerate(generator):
-            print("BATCH KEYS", batch["sent1_str"], batch["sent2_str"])
+            with open("dump_tokens_1.txt", 'a') as outfile:
+                print("BATCH KEYS", batch["sent1_str"], batch["sent2_str"])
+                outfile.write(batch["sent1_str"][0]+"\n")
+                outfile.write(batch["sent2_str"][0]+"\n")
             batch["input1"]["elmo"] = batch["input1"]["elmo"].cuda(cuda_device)
             batch["input2"]["elmo"] = batch["input2"]["elmo"].cuda(cuda_device)
             batch["labels"] = batch["labels"].cuda(cuda_device)      
