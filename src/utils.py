@@ -67,7 +67,12 @@ def load_model_state(model, state_path, gpu_id, skip_task_models=[], strict=True
         there is a risk of leaving some parameters in their randomly initialized state.
     '''
     model_state = torch.load(state_path, map_location=device_mapping(gpu_id))
+    skip_task_models=[]
+    strict=True
 
+    print("MODEL STATE", model_state)
+    print("SKIP TASK MODEL, STRICT", skip_task_models, strict)
+    
     assert_for_log(
         not (
             skip_task_models and strict),
@@ -95,6 +100,7 @@ def load_model_state(model, state_path, gpu_id, skip_task_models=[], strict=True
                 logging.info("Found no task-specific parameters to skip for task: %s" % task)
         for key in keys_to_skip:
             del model_state[key]
+    #print("KEYS TO SKIP", keys_to_skip)
 
     model.load_state_dict(model_state, strict=False)
     logging.info("Loaded model state from %s", state_path)
