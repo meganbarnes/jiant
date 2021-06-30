@@ -1,7 +1,7 @@
 #!/bin/bash
 
 CLASSIFIER_TASK=mnli
-EXP_NAME=probe-nli-classifier-extra_test2     # experiment name
+EXP_NAME=probe-nli-classifier     # experiment name
 RUN_NAME=train              # run name
 
 MODEL_DIR="/home2/mrbarnes/gp1/jiant/probe-mnli/probe-mnli-train"                # provide path to pretrained model dir
