@@ -1662,7 +1662,7 @@ class NLITypeProbingTaskQuant(NLITypeProbingTask):
         tr_data = load_tsv(os.path.join(path, 'train_dummy.tsv'), max_seq_len,
                            s1_idx=1, s2_idx=2, targ_idx=None, skip_rows=0)
         val_data = load_tsv(os.path.join(path, 'nli-quantification.tsv'), max_seq_len, idx_idx=0,
-                            s1_idx=9, s2_idx=10, targ_idx=1, targ_map=targ_map, skip_rows=1)
+                           s1_idx=8, s2_idx=9, targ_idx=0, targ_map=targ_map, skip_rows=1)
         te_data = load_tsv(os.path.join(path, 'test_dummy.tsv'), max_seq_len,
                            s1_idx=1, s2_idx=2, targ_idx=None, skip_rows=0)
  
@@ -1685,7 +1685,7 @@ class NLITypeProbingTaskSpatial(NLITypeProbingTask):
         tr_data = load_tsv(os.path.join(path, 'train_dummy.tsv'), max_seq_len,
                            s1_idx=1, s2_idx=2, targ_idx=None, skip_rows=0)
         val_data = load_tsv(os.path.join(path, 'nli-spatial.tsv'), max_seq_len, idx_idx=0,
-                            s1_idx=9, s2_idx=10, targ_idx=1, targ_map=targ_map, skip_rows=1)
+                           s1_idx=8, s2_idx=9, targ_idx=0, targ_map=targ_map, skip_rows=1)
         te_data = load_tsv(os.path.join(path, 'test_dummy.tsv'), max_seq_len,
                            s1_idx=1, s2_idx=2, targ_idx=None, skip_rows=0)
  
