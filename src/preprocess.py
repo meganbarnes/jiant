@@ -395,6 +395,8 @@ def build_tasks(args):
 def parse_task_list_arg(task_list):
     '''Parse task list argument into a list of task names.'''
     task_names = []
+    log.info("ALL TASKS" + task_list)
+    log.info(task_list.split(','))
     for task_name in task_list.split(','):
         if task_name == 'glue':
             task_names.extend(ALL_GLUE_TASKS)
