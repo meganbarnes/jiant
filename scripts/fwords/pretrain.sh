@@ -1,7 +1,7 @@
 #!/bin/bash
 
 PRETRAIN_TASK=mnli   # name of pretraining task as defined by @register_task in src/tasks.py
-EXP_NAME=probe-mnli-big        # experiment name
+EXP_NAME=probe-mnli-big-batch_size_32        # experiment name
 RUN_NAME=probe-mnli-big-train  # run name
 
 OVERRIDES+=", exp_name = ${EXP_NAME}"
